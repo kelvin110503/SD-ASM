@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Public Service Locator{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section bg-primary text-white py-5 rounded mb-4">
+    <div class="row align-items-center text-center">
+        <div class="col-lg-6">
+            <h1 class="display-4 fw-bold mb-4">
+                <i class="fas fa-map-marker-alt me-3"></i>
+                Public Service Locator
+            </h1>
+            <p class="lead mb-4">
+                Connecting communities with essential public services aligned with UN Sustainable Development Goal 10.
+            </p>
+            <div class="d-flex gap-3 justify-content-center">
+                <a href="{{ url_for('search') }}" class="btn btn-warning btn-lg fw-bold" role="button" tabindex="0" onclick="window.location.href='{{ url_for('search') }}'">
+                    <i class="fas fa-search me-2"></i>Search Services
+                </a>
+                {% if not current_user.is_authenticated %}
+                    <a href="{{ url_for('register') }}" class="btn btn-outline-light btn-lg" role="button" tabindex="0" onclick="window.location.href='{{ url_for('register') }}'">
+                        <i class="fas fa-user-plus me-2"></i>Join Now
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-lg-6 text-center">
+            <i class="fas fa-map-marked-alt display-1 text-light opacity-75"></i>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="row mb-5">
+    <div class="col-12">
+        <h2 class="text-center mb-5">How It Works</h2>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body text-center p-4">
+                <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                    <i class="fas fa-search fa-2x text-primary"></i>
+                </div>
+                <h5 class="card-title">Search & Discover</h5>
+                <p class="card-text">
+                    Search for services by category, location, or keyword. Find exactly what you need with our intelligent search system.
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body text-center p-4">
+                <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                    <i class="fas fa-map fa-2x text-success"></i>
+                </div>
+                <h5 class="card-title">View on Map</h5>
+                <p class="card-text">
+                    Visualize service locations on an interactive map. Get directions and see what's available in your area.
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body text-center p-4">
+                <div class="bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                    <i class="fas fa-star fa-2x text-info"></i>
+                </div>
+                <h5 class="card-title">Rate & Review</h5>
+                <p class="card-text">
+                    Share your experiences and help others by rating and reviewing services. Build a trusted community.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Service Categories -->
+<div class="row mb-5">
+    <div class="col-12">
+        <h2 class="text-center mb-5">Service Categories</h2>
+    </div>
+    
+    <div class="col-md-3 col-sm-6 mb-4">
+        <div class="card text-center border-0 shadow-sm h-100">
+            <div class="card-body">
+                <i class="fas fa-utensils fa-3x text-warning mb-3"></i>
+                <h6 class="card-title">Food Banks</h6>
+                <p class="card-text small">Access to food assistance and meal programs</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 col-sm-6 mb-4">
+        <div class="card text-center border-0 shadow-sm h-100">
+            <div class="card-body">
+                <i class="fas fa-home fa-3x text-info mb-3"></i>
+                <h6 class="card-title">Shelters</h6>
+                <p class="card-text small">Emergency housing and temporary accommodation</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 col-sm-6 mb-4">
+        <div class="card text-center border-0 shadow-sm h-100">
+            <div class="card-body">
+                <i class="fas fa-user-md fa-3x text-success mb-3"></i>
+                <h6 class="card-title">Clinics</h6>
+                <p class="card-text small">Healthcare services and medical assistance</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 col-sm-6 mb-4">
+        <div class="card text-center border-0 shadow-sm h-100">
+            <div class="card-body">
+                <i class="fas fa-recycle fa-3x text-primary mb-3"></i>
+                <h6 class="card-title">Recycling Centers</h6>
+                <p class="card-text small">Environmental services and waste management</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Call to Action -->
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="bg-light rounded p-5 text-center">
+            <h3>Ready to Find Services?</h3>
+            <p class="lead mb-4">Start exploring public services in your community today.</p>
+            <a href="{{ url_for('search') }}" class="btn btn-warning btn-lg fw-bold" role="button" tabindex="0" onclick="window.location.href='{{ url_for('search') }}'">
+                <i class="fas fa-search me-2"></i>Start Searching
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- SDG Information -->
+<div class="row">
+    <div class="col-12">
+        <div class="alert alert-info" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-globe fa-2x me-3"></i>
+                <div>
+                    <h5 class="alert-heading">Supporting UN Sustainable Development Goal 10</h5>
+                    <p class="mb-0">
+                        This platform aligns with SDG 10: Reduced Inequalities. By connecting communities with essential public services, 
+                        we help reduce disparities in access to vital resources and promote social inclusion.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

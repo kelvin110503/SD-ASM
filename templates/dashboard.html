@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Public Service Locator{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">
+            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+        </h1>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Welcome Card -->
+    <div class="col-12 mb-4">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h4 class="card-title">Welcome back, {{ current_user.username }}!</h4>
+                        <p class="card-text mb-0">
+                            You're logged in as a <strong>{{ current_user.role|title }}</strong>. 
+                            Start exploring public services in your community.
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <i class="fas fa-user-circle fa-3x opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-bolt me-2"></i>Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('search') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-search me-2"></i>Search Services
+                    </a>
+                    <a href="{{ url_for('search') }}?category=food%20bank" class="btn btn-outline-warning">
+                        <i class="fas fa-utensils me-2"></i>Find Food Banks
+                    </a>
+                    <a href="{{ url_for('search') }}?category=shelter" class="btn btn-outline-info">
+                        <i class="fas fa-home me-2"></i>Find Shelters
+                    </a>
+                    <a href="{{ url_for('search') }}?category=clinic" class="btn btn-outline-success">
+                        <i class="fas fa-user-md me-2"></i>Find Clinics
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Account Information -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-user me-2"></i>Account Information
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6">
+                        <strong>Username:</strong><br>
+                        <span class="text-muted">{{ current_user.username }}</span>
+                    </div>
+                    <div class="col-6">
+                        <strong>Email:</strong><br>
+                        <span class="text-muted">{{ current_user.email }}</span>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-6">
+                        <strong>Role:</strong><br>
+                        <span class="badge bg-primary">{{ current_user.role|title }}</span>
+                    </div>
+                    <div class="col-6">
+                        <strong>Member Since:</strong><br>
+                        <span class="text-muted">{{ current_user.created_at.strftime('%B %Y') }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-clock me-2"></i>Recent Activity
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Welcome to the Public Service Locator! Start by searching for services in your area.
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-4 text-center">
+                        <div class="p-3">
+                            <i class="fas fa-search fa-2x text-primary mb-2"></i>
+                            <h6>Search Services</h6>
+                            <p class="small text-muted">Find services by category or location</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="p-3">
+                            <i class="fas fa-map fa-2x text-success mb-2"></i>
+                            <h6>View on Map</h6>
+                            <p class="small text-muted">See service locations visually</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="p-3">
+                            <i class="fas fa-star fa-2x text-warning mb-2"></i>
+                            <h6>Rate & Review</h6>
+                            <p class="small text-muted">Share your experiences</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Design Pattern Information -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card border-info">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-cogs me-2"></i>System Architecture - Design Patterns
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Factory Pattern</h6>
+                        <p class="small text-muted">
+                            Used for creating different user types (General, Provider, Admin) based on role selection during registration.
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Singleton Pattern</h6>
+                        <p class="small text-muted">
+                            Ensures only one ServiceRegistry instance manages all public services throughout the application.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Strategy Pattern</h6>
+                        <p class="small text-muted">
+                            Provides interchangeable search strategies (Category, Location, Rating) for flexible service discovery.
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Facade Pattern</h6>
+                        <p class="small text-muted">
+                            Simplifies complex subsystem interactions (Search, Detail, Map services) through a unified interface.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <h6>Observer Pattern</h6>
+                        <p class="small text-muted">
+                            Enables real-time notifications when services are added, updated, or approved, keeping users informed.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,635 @@
+/* Custom Styles for Public Service Locator System */
+
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    opacity: 0.3;
+}
+
+/* Card Enhancements */
+.card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    border: none;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    background-color: rgba(0, 0, 0, 0.03);
+}
+
+/* Button Enhancements */
+.btn, a.btn {
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    position: relative !important;
+    z-index: 10 !important;
+}
+
+.btn:hover, a.btn:hover {
+    cursor: pointer !important;
+    pointer-events: auto !important;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    border: none;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+.btn-outline-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
+}
+
+/* Debug styles to make buttons more visible */
+.btn-warning {
+    background-color: #ffc107 !important;
+    border-color: #ffc107 !important;
+    color: #000 !important;
+    border: 2px solid #ffc107 !important;
+}
+
+.btn-warning:hover {
+    background-color: #ffca2c !important;
+    border-color: #ffca2c !important;
+    color: #000 !important;
+    border: 2px solid #ffca2c !important;
+}
+
+.btn-outline-light {
+    border: 2px solid #fff !important;
+    color: #fff !important;
+}
+
+.btn-outline-light:hover {
+    background-color: #fff !important;
+    color: #000 !important;
+    border: 2px solid #fff !important;
+}
+
+/* Navigation Enhancements */
+.navbar {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+.nav-link {
+    font-weight: 500;
+    transition: color 0.2s ease-in-out;
+}
+
+.nav-link:hover {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Form Enhancements */
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 2px solid #e9ecef;
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.input-group-text {
+    border-radius: 8px 0 0 8px;
+    border: 2px solid #e9ecef;
+    border-right: none;
+}
+
+.input-group .form-control {
+    border-left: none;
+    border-radius: 0 8px 8px 0;
+}
+
+/* Alert Enhancements */
+.alert {
+    border-radius: 10px;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.alert-info {
+    font-size: 1.05rem;
+    color: #1a1a1a !important;
+    background-color: #e9f7fd !important;
+}
+
+.alert-info h6 {
+    font-weight: 600;
+    color: #0d6efd !important;
+}
+
+.alert-info ul, .alert-info li {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #1a1a1a !important;
+}
+
+.alert-success {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    color: #155724;
+}
+
+.alert-warning {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    color: #856404;
+}
+
+/* Badge Enhancements */
+.badge {
+    font-weight: 500;
+    padding: 0.5em 0.75em;
+    border-radius: 6px;
+}
+
+/* Map Container */
+#map {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+/* Service Cards */
+.service-card {
+    transition: all 0.3s ease-in-out;
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Rating Stars */
+.rating-stars {
+    color: #ffc107;
+}
+
+.rating-stars .far {
+    color: #e9ecef;
+}
+
+/* Footer Enhancements */
+footer {
+    background: linear-gradient(135deg, #343a40 0%, #212529 100%);
+}
+
+footer a {
+    transition: color 0.2s ease-in-out;
+}
+
+footer a:hover {
+    color: #007bff !important;
+    text-decoration: none;
+}
+
+/* Loading Animation */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-section {
+        text-align: center;
+    }
+    
+    .hero-section .display-4 {
+        font-size: 2rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .btn-lg {
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+    }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Focus States for Accessibility */
+.btn:focus, .form-control:focus, .form-select:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+/* Print Styles */
+@media print {
+    .navbar, .footer, .btn {
+        display: none !important;
+    }
+    
+    .card {
+        border: 1px solid #000 !important;
+        box-shadow: none !important;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .card {
+        background-color: #2d3748;
+        color: #e2e8f0;
+    }
+    
+    .form-control, .form-select {
+        background-color: #4a5568;
+        border-color: #718096;
+        color: #e2e8f0;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        background-color: #4a5568;
+        border-color: #63b3ed;
+    }
+    .alert-info {
+        color: #f8f9fa !important;
+        background-color: #223344 !important;
+    }
+    .alert-info h6 {
+        color: #90caf9 !important;
+    }
+    .alert-info ul, .alert-info li {
+        color: #f8f9fa !important;
+    }
+}
+
+/* Animation Classes */
+.fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.slide-in-left {
+    animation: slideInLeft 0.5s ease-in-out;
+}
+
+@keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-30px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.slide-in-right {
+    animation: slideInRight 0.5s ease-in-out;
+}
+
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(30px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* Utility Classes */
+.text-gradient {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+}
+
+.bg-gradient-success {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+}
+
+.bg-gradient-warning {
+    background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+}
+
+.bg-gradient-info {
+    background: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%);
+}
+
+/* Location Picker Map Styles */
+#locationMap {
+    height: 400px;
+    width: 100%;
+    border-radius: 8px;
+    border: 2px solid #dee2e6;
+    z-index: 1;
+    position: relative;
+}
+
+#locationMap .leaflet-container {
+    height: 100%;
+    width: 100%;
+}
+
+.location-picker-marker {
+    background: transparent;
+    border: none;
+}
+
+.leaflet-control-locate {
+    background-color: white !important;
+    border: 2px solid rgba(0,0,0,0.2) !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease;
+}
+
+.leaflet-control-locate:hover {
+    background-color: #f8f9fa !important;
+    border-color: rgba(0,0,0,0.3) !important;
+}
+
+/* Map alert styles */
+#location-alert {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 20px;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+    z-index: 1001;
+    max-width: 300px;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+/* Ensure map is clickable */
+.leaflet-interactive {
+    cursor: pointer !important;
+}
+
+.leaflet-container {
+    cursor: crosshair !important;
+}
+
+/* Manual location button */
+.btn-outline-secondary {
+    border-color: #6c757d;
+    color: #6c757d;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: white;
+}
+
+/* Ensure links are clickable */
+a {
+    cursor: pointer !important;
+    text-decoration: none !important;
+}
+
+a:hover {
+    text-decoration: none !important;
+}
+
+/* Map Legend Styles */
+#mapLegend {
+    font-size: 12px;
+    border: 1px solid #ddd;
+}
+
+#mapLegend h6 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    padding: 2px 0;
+}
+
+.legend-color {
+    border: 1px solid #ccc;
+}
+
+/* Custom Marker Styles */
+.custom-marker {
+    background: transparent;
+    border: none;
+}
+
+.custom-marker div {
+    transition: transform 0.2s ease;
+}
+
+.custom-marker:hover div {
+    transform: scale(1.2);
+}
+
+/* Map Container Enhancements */
+#map {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.leaflet-popup-content {
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.leaflet-popup-content a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.leaflet-popup-content a:hover {
+    text-decoration: underline;
+}
+
+/* Improved Font Rendering */
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-weight: 400;
+}
+
+/* Service Card Text Improvements */
+.card-text {
+    font-weight: 400 !important;
+    line-height: 1.5 !important;
+    color: #f8f9fa !important;
+}
+
+.card-text.text-muted {
+    font-weight: 500 !important;
+    color: #bfc8d0 !important;
+}
+
+/* Legend Text Improvements */
+#mapLegend span {
+    font-weight: 500 !important;
+    color: #333 !important;
+    text-rendering: optimizeLegibility;
+}
+
+/* Small Text Improvements */
+.small {
+    font-weight: 500 !important;
+    color: #6c757d !important;
+}
+
+/* Badge Text Improvements */
+.badge {
+    font-weight: 500 !important;
+    text-rendering: optimizeLegibility;
+}
+
+/* General Text Improvements */
+p, span, div {
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Provider Response Styles */
+.response-form {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.response-form textarea {
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    resize: vertical;
+}
+
+.response-form textarea:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Provider Response Display */
+.provider-response {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-left: 4px solid #007bff;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.provider-response .response-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    color: #007bff;
+    font-weight: 600;
+}
+
+.provider-response .response-content {
+    color: #495057;
+    font-weight: 500;
+    line-height: 1.5;
+    margin-bottom: 8px;
+}
+
+.provider-response .response-date {
+    color: #6c757d;
+    font-size: 0.85rem;
+}
+
+/* Review Section Enhancements */
+.review-item {
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+}
+
+.review-item:last-child {
+    border-bottom: none;
+}
+
+.review-comment {
+    font-weight: 500;
+    color: #f8f9fa !important;
+    line-height: 1.5;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.review-meta {
+    color: #bfc8d0 !important;
+    font-size: 0.95rem;
+}
+
+.notification-message {
+    display: block;
+    max-width: 270px;
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
+.text-muted, .small {
+    color: #bfc8d0 !important;
+} 

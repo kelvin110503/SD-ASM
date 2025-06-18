@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Register - Public Service Locator{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <i class="fas fa-user-plus fa-3x text-primary mb-3"></i>
+                    <h2 class="card-title">Create Account</h2>
+                    <p class="text-muted">Join our community and start exploring public services.</p>
+                </div>
+                
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-user"></i>
+                                </span>
+                                <input type="text" class="form-control" id="username" name="username" required>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-envelope"></i>
+                                </span>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-lock"></i>
+                            </span>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="role" class="form-label">Account Type</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-users"></i>
+                            </span>
+                            <select class="form-select" id="role" name="role" required>
+                                <option value="">Choose your role...</option>
+                                <option value="general">General User</option>
+                                <option value="provider">Service Provider</option>
+                            </select>
+                        </div>
+                        <div class="form-text">
+                            <small>
+                                <strong>General User:</strong> Search, view, and review services<br>
+                                <strong>Service Provider:</strong> Register and manage your services
+                            </small>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-user-plus me-2"></i>Create Account
+                        </button>
+                    </div>
+                </form>
+                
+                <hr class="my-4">
+                
+                <div class="text-center">
+                    <p class="mb-0">Already have an account? 
+                        <a href="{{ url_for('login') }}" class="text-decoration-none">Login here</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Role Information -->
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card border-primary">
+                    <div class="card-body">
+                        <h6 class="card-title text-primary">
+                            <i class="fas fa-user me-2"></i>General User
+                        </h6>
+                        <ul class="list-unstyled small">
+                            <li><i class="fas fa-check text-success me-2"></i>Search for services</li>
+                            <li><i class="fas fa-check text-success me-2"></i>View service details</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Submit reviews and ratings</li>
+                            <li><i class="fas fa-check text-success me-2"></i>View services on map</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card border-success">
+                    <div class="card-body">
+                        <h6 class="card-title text-success">
+                            <i class="fas fa-building me-2"></i>Service Provider
+                        </h6>
+                        <ul class="list-unstyled small">
+                            <li><i class="fas fa-check text-success me-2"></i>All General User features</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Register new services</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Update service information</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Respond to reviews</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

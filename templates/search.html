@@ -1,0 +1,611 @@
+{% extends "base.html" %}
+
+{% block title %}Search Services - Public Service Locator{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Search Filters -->
+    <div class="col-lg-3">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-filter me-2"></i>Search Filters
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="GET" action="{{ url_for('search') }}" id="searchForm">
+                    <div class="mb-3">
+                        <label for="q" class="form-label">Search Query</label>
+                        <input type="text" class="form-control" id="q" name="q" value="{{ query }}" placeholder="Enter search term...">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Category</label>
+                        <select class="form-select" id="category" name="category">
+                            <option value="">All Categories</option>
+                            <option value="food bank" {% if category == 'food bank' %}selected{% endif %}>Food Bank</option>
+                            <option value="shelter" {% if category == 'shelter' %}selected{% endif %}>Shelter</option>
+                            <option value="clinic" {% if category == 'clinic' %}selected{% endif %}>Clinic</option>
+                            <option value="recycling center" {% if category == 'recycling center' %}selected{% endif %}>Recycling Center</option>
+                            <option value="education" {% if category == 'education' %}selected{% endif %}>Education</option>
+                            <option value="employment" {% if category == 'employment' %}selected{% endif %}>Employment</option>
+                            <option value="transportation" {% if category == 'transportation' %}selected{% endif %}>Transportation</option>
+                            <option value="other" {% if category == 'other' %}selected{% endif %}>Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="min_rating" class="form-label">Minimum Rating</label>
+                        <select class="form-select" id="min_rating" name="min_rating">
+                            <option value="">Any Rating</option>
+                            <option value="4" {% if min_rating|float == 4 %}selected{% endif %}>4+ Stars</option>
+                            <option value="3" {% if min_rating|float == 3 %}selected{% endif %}>3+ Stars</option>
+                            <option value="2" {% if min_rating|float == 2 %}selected{% endif %}>2+ Stars</option>
+                            <option value="1" {% if min_rating|float == 1 %}selected{% endif %}>1+ Stars</option>
+                        </select>
+                    </div>
+                    
+                    <hr>
+
+                    <!-- Proximity Filter -->
+                    <h6 class="mb-3"><i class="fas fa-compass me-2"></i>Proximity Search</h6>
+                    <div class="mb-3">
+                        <label for="user_lat" class="form-label">Your Latitude</label>
+                        <input type="text" class="form-control" id="user_lat" name="user_lat" value="{{ user_lat if user_lat is not none else '' }}" placeholder="e.g., 34.0522">
+                    </div>
+                    <div class="mb-3">
+                        <label for="user_lon" class="form-label">Your Longitude</label>
+                        <input type="text" class="form-control" id="user_lon" name="user_lon" value="{{ user_lon if user_lon is not none else '' }}" placeholder="e.g., -118.2437">
+                    </div>
+                    <div class="mb-3">
+                        <label for="radius" class="form-label">Radius (KM)</label>
+                        <input type="number" class="form-control" id="radius" name="radius" value="{{ radius if radius is not none else '' }}" placeholder="e.g., 10" min="1">
+                    </div>
+                    <div class="d-grid mb-3">
+                        <button type="button" class="btn btn-info" id="getGeolocationBtn">
+                            <i class="fas fa-location-arrow me-2"></i>Get My Location
+                        </button>
+                    </div>
+
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search me-2"></i>Apply Filters
+                        </button>
+                    </div>
+                </form>
+                
+                <hr>
+                
+                <!-- Location Controls -->
+                <div class="mb-3">
+                    <h6><i class="fas fa-map-marker-alt me-2"></i>Map Controls</h6>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-success" id="findNearMeBtn">
+                            <i class="fas fa-crosshairs me-2"></i>Center Map on Me
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary" id="showAllServicesBtn">
+                            <i class="fas fa-globe me-2"></i>Show All Services on Map
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-secondary" id="resetMapBtn">
+                            <i class="fas fa-undo me-2"></i>Reset Map View
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Map Instructions -->
+                <div class="alert alert-info small">
+                    <h6><i class="fas fa-info-circle me-2"></i>Map Tips:</h6>
+                    <ul class="mb-0 small">
+                        <li>Click on markers to see service details</li>
+                        <li>Use "Center Map on Me" to focus on your location</li>
+                        <li>Drag the map to explore different areas</li>
+                        <li>Zoom in/out to see more details</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Search Results and Map -->
+    <div class="col-lg-9">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>
+                <i class="fas fa-search me-2"></i>Search Results
+                {% if query or category or user_lat is not none or min_rating is not none %}
+                    <small class="text-muted">Filtered</small>
+                {% endif %}
+            </h2>
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-primary active" id="listView">
+                    <i class="fas fa-list me-1"></i>List View
+                </button>
+                <button type="button" class="btn btn-outline-primary" id="mapView">
+                    <i class="fas fa-map me-1"></i>Map View
+                </button>
+            </div>
+        </div>
+        
+        <!-- Results Count -->
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            Found <strong>{{ services|length }}</strong> service(s)
+            {% if query or category or user_lat is not none or min_rating is not none %}
+                matching your criteria.
+            {% else %}
+                available in the system.
+            {% endif %}
+        </div>
+        
+        <!-- List View -->
+        <div id="listViewContent">
+            {% if services %}
+                <div class="row">
+                    {% for service in services %}
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100 shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h5 class="card-title mb-0">{{ service.name }}</h5>
+                                        <span class="badge" style="background-color: {{ '#' + ('FF6B6B' if service.category == 'food bank' else '4ECDC4' if service.category == 'shelter' else '45B7D1' if service.category == 'clinic' else '96CEB4' if service.category == 'recycling center' else 'FFEAA7' if service.category == 'education' else 'DDA0DD' if service.category == 'employment' else 'FDCB6E' if service.category == 'transportation' else 'A8A8A8') }}; color: {{ 'white' if service.category in ['food bank', 'shelter', 'clinic', 'recycling center', 'employment'] else 'black' }};">{{ service.category }}</span>
+                                    </div>
+                                    
+                                    <p class="card-text text-muted" style="font-weight: 500; font-size: 0.9rem;">
+                                        <i class="fas fa-map-marker-alt me-1"></i>{{ service.address }}
+                                    </p>
+                                    
+                                    {% if service.rating > 0 %}
+                                        <div class="mb-2">
+                                            {% for i in range(5) %}
+                                                {% if i < service.rating %}
+                                                    <i class="fas fa-star text-warning"></i>
+                                                {% else %}
+                                                    <i class="far fa-star text-muted"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                            <span class="ms-1" style="font-weight: 500; font-size: 0.85rem; color: #6c757d;">({{ "%.1f"|format(service.rating) }})</span>
+                                        </div>
+                                    {% endif %}
+                                    
+                                    {% if service.description %}
+                                        <p class="card-text" style="font-weight: 400; font-size: 0.9rem; color: #495057; line-height: 1.4;">{{ service.description[:100] }}{% if service.description|length > 100 %}...{% endif %}</p>
+                                    {% endif %}
+                                    
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <a href="{{ url_for('service_detail', service_id=service.id) }}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-info-circle me-1"></i>Details
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">No services found</h4>
+                    <p class="text-muted">Try adjusting your search criteria or browse all services.</p>
+                    <a href="{{ url_for('search') }}" class="btn btn-primary">
+                        <i class="fas fa-list me-2"></i>View All Services
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Map View -->
+        <div id="mapViewContent" style="display: none;">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0"><i class="fas fa-map me-2"></i>Interactive Map</h6>
+                        <div class="btn-group btn-group-sm" role="group">
+                            <button type="button" class="btn btn-outline-secondary" id="zoomInBtn">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" id="zoomOutBtn">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0 position-relative">
+                    <div id="map" style="height: 600px;"></div>
+                    
+                    <!-- Category Legend -->
+                    <div id="mapLegend" class="position-absolute" style="top: 10px; right: 10px; background: white; padding: 10px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 1000; max-width: 200px;">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="mb-0"><i class="fas fa-legend me-1"></i>Service Categories</h6>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" id="toggleLegend" style="padding: 2px 6px; font-size: 10px;">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div id="legendContent">
+                            <div class="legend-item mb-1">
+                                <span class="legend-color" style="background-color: #FF6B6B; width: 15px; height: 15px; display: inline-block; border-radius: 50%; margin-right: 8px;"></span>
+                                <span style="font-weight: 500; font-size: 0.85rem; color: #333;">Food Bank</span>
+                            </div>
+                            <div class="legend-item mb-1">
+                                <span class="legend-color" style="background-color: #4ECDC4; width: 15px; height: 15px; display: inline-block; border-radius: 50%; margin-right: 8px;"></span>
+                                <span style="font-weight: 500; font-size: 0.85rem; color: #333;">Shelter</span>
+                            </div>
+                            <div class="legend-item mb-1">
+                                <span class="legend-color" style="background-color: #45B7D1; width: 15px; height: 15px; display: inline-block; border-radius: 50%; margin-right: 8px;"></span>
+                                <span style="font-weight: 500; font-size: 0.85rem; color: #333;">Clinic</span>
+                            </div>
+                            <div class="legend-item mb-1">
+                                <span class="legend-color" style="background-color: #96CEB4; width: 15px; height: 15px; display: inline-block; border-radius: 50%; margin-right: 8px;"></span>
+                                <span style="font-weight: 500; font-size: 0.85rem; color: #333;">Recycling Center</span>
+                            </div>
+                            <div class="legend-item mb-1">
+                                <span class="legend-color" style="background-color: #FFEAA7; width: 15px; height: 15px; display: inline-block; border-radius: 50%; margin-right: 8px;"></span>
+                                <span style="font-weight: 500; font-size: 0.85rem; color: #333;">Education</span>
+                            </div>
+                            <div class="legend-item mb-1">
+                                <span class="legend-color" style="background-color: #DDA0DD; width: 15px; height: 15px; display: inline-block; border-radius: 50%; margin-right: 8px;"></span>
+                                <span style="font-weight: 500; font-size: 0.85rem; color: #333;">Employment</span>
+                            </div>
+                            <div class="legend-item mb-1">
+                                <span class="legend-color" style="background-color: #FDCB6E; width: 15px; height: 15px; display: inline-block; border-radius: 50%; margin-right: 8px;"></span>
+                                <span style="font-weight: 500; font-size: 0.85rem; color: #333;">Transportation</span>
+                            </div>
+                            <div class="legend-item mb-1">
+                                <span class="legend-color" style="background-color: #A8A8A8; width: 15px; height: 15px; display: inline-block; border-radius: 50%; margin-right: 8px;"></span>
+                                <span style="font-weight: 500; font-size: 0.85rem; color: #333;">Other</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden data container for JavaScript -->
+<div id="services-data" data-services='{{ services_json | tojson | safe }}' style="display: none;"></div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    // Search page JavaScript with comprehensive debugging
+    console.log('=== search.js loaded successfully ===');
+
+    let map;
+    let markers = [];
+
+    // Category color mapping
+    const categoryColors = {
+        'food bank': '#FF6B6B',
+        'shelter': '#4ECDC4', 
+        'clinic': '#45B7D1',
+        'recycling center': '#96CEB4',
+        'education': '#FFEAA7',
+        'employment': '#DDA0DD',
+        'transportation': '#FDCB6E',
+        'other': '#A8A8A8'
+    };
+
+    // Function to create custom colored marker
+    function createCategoryMarker(lat, lng, category) {
+        const color = categoryColors[category.toLowerCase()] || categoryColors['other'];
+        
+        // Create custom icon with category color
+        const customIcon = L.divIcon({
+            className: 'custom-marker',
+            html: `<div style="background-color: ${color}; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);"></div>`,
+            iconSize: [20, 20],
+            iconAnchor: [10, 10]
+        });
+        
+        return L.marker([lat, lng], { icon: customIcon });
+    }
+
+    function getFirstServiceCoords() {
+        const servicesDataElement = document.getElementById('services-data');
+        if (servicesDataElement) {
+            const services = JSON.parse(servicesDataElement.dataset.services);
+            for (const service of services) {
+                if (service.latitude && service.longitude) {
+                    return [service.latitude, service.longitude];
+                }
+            }
+        }
+        // Default to Kuala Lumpur, Malaysia
+        return [3.139, 101.6869];
+    }
+
+    function initializeMap() {
+        console.log('=== initializeMap called ===');
+        if (typeof L === 'undefined') {
+            console.error('Leaflet (L) is not defined. Ensure Leaflet library is loaded.');
+            alert('Map library not loaded. Please refresh the page.');
+            return;
+        }
+        const mapContainer = document.getElementById('map');
+        if (!mapContainer) {
+            console.error('Map container div with ID "map" not found!');
+            return;
+        }
+        if (map) {
+            console.log('Map already initialized. Invalidating size.');
+            map.invalidateSize();
+            return;
+        }
+        try {
+            const [initLat, initLon] = getFirstServiceCoords();
+            console.log('Initializing map at:', initLat, initLon);
+            map = L.map('map').setView([initLat, initLon], 12);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+            window.mapInitialized = true;
+            // Add markers for all services
+            addMarkersToMap();
+            console.log('Map tile layer and markers added successfully.');
+        } catch (e) {
+            console.error('Error initializing map:', e);
+            alert('Error initializing map: ' + e.message);
+        }
+    }
+
+    function addMarkersToMap() {
+        const servicesDataElement = document.getElementById('services-data');
+        if (!servicesDataElement) return;
+        const services = JSON.parse(servicesDataElement.dataset.services);
+        // Remove old markers
+        markers.forEach(marker => map.removeLayer(marker));
+        markers = [];
+        for (const service of services) {
+            if (service.latitude && service.longitude) {
+                const marker = createCategoryMarker(service.latitude, service.longitude, service.category);
+                marker.addTo(map)
+                    .bindPopup(`<b>${service.name}</b><br>${service.address}<br><a href="/service/${service.id}">Details</a>`);
+                markers.push(marker);
+            }
+        }
+        if (markers.length > 0) {
+            const group = new L.featureGroup(markers);
+            map.fitBounds(group.getBounds(), {padding: [50, 50]});
+        }
+    }
+
+    function getCurrentLocation() {
+        console.log('=== getCurrentLocation called ===');
+        if (!navigator.geolocation) {
+            console.error('Geolocation not supported');
+            alert('Geolocation is not supported by your browser.');
+            return;
+        }
+        console.log('Requesting current position...');
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                console.log('Geolocation success:', position.coords);
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+                // Update form fields
+                const latInput = document.getElementById('user_lat');
+                const lonInput = document.getElementById('user_lon');
+                if (latInput) latInput.value = lat;
+                if (lonInput) lonInput.value = lon;
+                console.log('Location fields updated:', lat, lon);
+                alert(`Location obtained: ${lat.toFixed(4)}, ${lon.toFixed(4)}`);
+            },
+            function(error) {
+                console.error('Geolocation error:', error);
+                let errorMessage = 'Error getting location: ';
+                switch(error.code) {
+                    case error.PERMISSION_DENIED:
+                        errorMessage += 'Permission denied. Please allow location access.';
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        errorMessage += 'Location information unavailable.';
+                        break;
+                    case error.TIMEOUT:
+                        errorMessage += 'Request timed out.';
+                        break;
+                    default:
+                        errorMessage += error.message;
+                }
+                alert(errorMessage);
+            },
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+        );
+    }
+
+    function centerMapOnUser() {
+        console.log('=== centerMapOnUser called ===');
+        if (!navigator.geolocation) {
+            alert('Geolocation not supported');
+            return;
+        }
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+                if (map) {
+                    map.setView([lat, lon], 15);
+                    L.marker([lat, lon]).addTo(map).bindPopup('You are here!').openPopup();
+                }
+                console.log('Map centered on user location:', lat, lon);
+            },
+            function(error) {
+                console.error('Error getting location for map centering:', error);
+                alert('Could not get your location to center the map.');
+            }
+        );
+    }
+
+    function switchToListView() {
+        console.log('=== switchToListView called ===');
+        const listContent = document.getElementById('listViewContent');
+        const mapContent = document.getElementById('mapViewContent');
+        const listBtn = document.getElementById('listView');
+        const mapBtn = document.getElementById('mapView');
+        if (listContent && mapContent && listBtn && mapBtn) {
+            listContent.style.display = 'block';
+            mapContent.style.display = 'none';
+            listBtn.classList.add('active');
+            mapBtn.classList.remove('active');
+            console.log('Switched to list view');
+        } else {
+            console.error('View toggle elements not found');
+        }
+    }
+
+    function switchToMapView() {
+        console.log('=== switchToMapView called ===');
+        const listContent = document.getElementById('listViewContent');
+        const mapContent = document.getElementById('mapViewContent');
+        const listBtn = document.getElementById('listView');
+        const mapBtn = document.getElementById('mapView');
+        if (listContent && mapContent && listBtn && mapBtn) {
+            listContent.style.display = 'none';
+            mapContent.style.display = 'block';
+            listBtn.classList.remove('active');
+            mapBtn.classList.add('active');
+            if (!window.mapInitialized) {
+                console.log('Initializing map for first time...');
+                initializeMap();
+            } else if (map) {
+                console.log('Map already initialized, invalidating size...');
+                map.invalidateSize();
+            }
+            console.log('Switched to map view');
+        } else {
+            console.error('View toggle elements not found');
+        }
+    }
+
+    function showAllServicesOnMap() {
+        console.log('=== showAllServicesOnMap called ===');
+        if (!map) {
+            console.error('Map not initialized');
+            alert('Please switch to map view first');
+            return;
+        }
+        addMarkersToMap();
+        console.log('All services displayed on map');
+    }
+
+    function resetMapView() {
+        console.log('=== resetMapView called ===');
+        if (!map) {
+            console.error('Map not initialized');
+            alert('Please switch to map view first');
+            return;
+        }
+        const [initLat, initLon] = getFirstServiceCoords();
+        map.setView([initLat, initLon], 12);
+        addMarkersToMap();
+        console.log('Map view reset to initial position');
+    }
+
+    function zoomInMap() {
+        console.log('=== zoomInMap called ===');
+        if (!map) {
+            console.error('Map not initialized');
+            return;
+        }
+        map.zoomIn();
+        console.log('Map zoomed in');
+    }
+
+    function zoomOutMap() {
+        console.log('=== zoomOutMap called ===');
+        if (!map) {
+            console.error('Map not initialized');
+            return;
+        }
+        map.zoomOut();
+        console.log('Map zoomed out');
+    }
+
+    function toggleLegend() {
+        console.log('=== toggleLegend called ===');
+        const legendContent = document.getElementById('legendContent');
+        const toggleBtn = document.getElementById('toggleLegend');
+        const icon = toggleBtn.querySelector('i');
+        
+        if (legendContent.style.display === 'none') {
+            legendContent.style.display = 'block';
+            icon.className = 'fas fa-eye';
+            console.log('Legend shown');
+        } else {
+            legendContent.style.display = 'none';
+            icon.className = 'fas fa-eye-slash';
+            console.log('Legend hidden');
+        }
+    }
+
+    function initializeSearchPage() {
+        console.log('=== Search page initialization started ===');
+        const getGeolocationBtn = document.getElementById('getGeolocationBtn');
+        const listViewBtn = document.getElementById('listView');
+        const mapViewBtn = document.getElementById('mapView');
+        const findNearMeBtn = document.getElementById('findNearMeBtn');
+        const showAllServicesBtn = document.getElementById('showAllServicesBtn');
+        const resetMapBtn = document.getElementById('resetMapBtn');
+        const zoomInBtn = document.getElementById('zoomInBtn');
+        const zoomOutBtn = document.getElementById('zoomOutBtn');
+        const toggleLegendBtn = document.getElementById('toggleLegend');
+        
+        console.log('DOM elements found:', {
+            getGeolocationBtn: !!getGeolocationBtn,
+            listViewBtn: !!listViewBtn,
+            mapViewBtn: !!mapViewBtn,
+            findNearMeBtn: !!findNearMeBtn,
+            showAllServicesBtn: !!showAllServicesBtn,
+            resetMapBtn: !!resetMapBtn,
+            zoomInBtn: !!zoomInBtn,
+            zoomOutBtn: !!zoomOutBtn,
+            toggleLegendBtn: !!toggleLegendBtn
+        });
+        
+        if (getGeolocationBtn) {
+            console.log('Attaching click listener to getGeolocationBtn');
+            getGeolocationBtn.addEventListener('click', getCurrentLocation);
+        }
+        if (listViewBtn) {
+            console.log('Attaching click listener to listViewBtn');
+            listViewBtn.addEventListener('click', switchToListView);
+        }
+        if (mapViewBtn) {
+            console.log('Attaching click listener to mapViewBtn');
+            mapViewBtn.addEventListener('click', switchToMapView);
+        }
+        if (findNearMeBtn) {
+            console.log('Attaching click listener to findNearMeBtn');
+            findNearMeBtn.addEventListener('click', centerMapOnUser);
+        }
+        if (showAllServicesBtn) {
+            console.log('Attaching click listener to showAllServicesBtn');
+            showAllServicesBtn.addEventListener('click', showAllServicesOnMap);
+        }
+        if (resetMapBtn) {
+            console.log('Attaching click listener to resetMapBtn');
+            resetMapBtn.addEventListener('click', resetMapView);
+        }
+        if (zoomInBtn) {
+            console.log('Attaching click listener to zoomInBtn');
+            zoomInBtn.addEventListener('click', zoomInMap);
+        }
+        if (zoomOutBtn) {
+            console.log('Attaching click listener to zoomOutBtn');
+            zoomOutBtn.addEventListener('click', zoomOutMap);
+        }
+        if (toggleLegendBtn) {
+            console.log('Attaching click listener to toggleLegendBtn');
+            toggleLegendBtn.addEventListener('click', toggleLegend);
+        }
+        console.log('=== Search page initialization completed ===');
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM Content Loaded - calling initializeSearchPage');
+        initializeSearchPage();
+    });
+</script>
+{% endblock %} 

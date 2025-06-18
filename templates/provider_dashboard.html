@@ -1,0 +1,271 @@
+{% extends "base.html" %}
+
+{% block title %}Provider Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2><i class="fas fa-user-tie"></i> Service Provider Dashboard</h2>
+            <p class="text-muted">Welcome, {{ current_user.username }}! Manage your services here.</p>
+        </div>
+    </div>
+
+    <div class="row mt-4 mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-bar"></i> Quick Stats</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <div class="text-center">
+                                <h3 class="text-primary">{{ services|length }}</h3>
+                                <p class="text-muted">Total Services</p>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="text-center">
+                                <h3 class="text-success">{{ services|selectattr('is_approved')|rejectattr('is_held')|list|length }}</h3>
+                                <p class="text-muted">Active Services</p>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="text-center">
+                                <h3 class="text-warning">{{ services|rejectattr('is_approved')|rejectattr('is_rejected')|rejectattr('is_held')|list|length }}</h3>
+                                <p class="text-muted">Pending Approval</p>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="text-center">
+                                <h3 class="text-danger">{{ services|selectattr('is_rejected')|list|length }}</h3>
+                                <p class="text-muted">Rejected Services</p>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="text-center">
+                                <h3 class="text-warning">{{ services|selectattr('is_held')|list|length }}</h3>
+                                <p class="text-muted">On Hold</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-list"></i> My Services</h5>
+                    <a href="{{ url_for('add_service') }}" class="btn btn-sm btn-primary">
+                        <i class="fas fa-plus"></i> Add New Service
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if services %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Category</th>
+                                        <th>Address</th>
+                                        <th>Status</th>
+                                        <th>Rating</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for service in services %}
+                                    <tr>
+                                        <td>{{ service.name }}</td>
+                                        <td>
+                                            <span class="badge" style="background-color: {{ '#FF6B6B' if service.category == 'food bank' else '#4ECDC4' if service.category == 'shelter' else '#45B7D1' if service.category == 'clinic' else '#96CEB4' if service.category == 'recycling center' else '#FFEAA7' if service.category == 'education' else '#DDA0DD' if service.category == 'employment' else '#FDCB6E' if service.category == 'transportation' else '#A8A8A8' }}; color: {{ 'white' if service.category in ['food bank', 'shelter', 'clinic', 'recycling center', 'employment'] else 'black' }};">{{ service.category }}</span>
+                                        </td>
+                                        <td>{{ service.address }}</td>
+                                        <td>
+                                            {% if service.is_held %}
+                                                <span class="badge bg-warning">On Hold</span>
+                                            {% elif service.is_approved %}
+                                                <span class="badge bg-success">Approved</span>
+                                            {% elif service.is_rejected %}
+                                                <span class="badge bg-danger">Rejected</span>
+                                            {% else %}
+                                                <span class="badge bg-warning">Pending</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if service.rating %}
+                                                <div class="d-flex align-items-center">
+                                                    <span class="text-warning">
+                                                        {% for i in range(service.rating|int) %}
+                                                            <i class="fas fa-star"></i>
+                                                        {% endfor %}
+                                                        {% for i in range(5 - service.rating|int) %}
+                                                            <i class="far fa-star"></i>
+                                                        {% endfor %}
+                                                    </span>
+                                                    <span class="ms-2">{{ "%.1f"|format(service.rating) }}</span>
+                                                </div>
+                                            {% else %}
+                                                <span class="text-muted">No ratings</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="{{ url_for('service_detail', service_id=service.id) }}" 
+                                               class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i> View
+                                            </a>
+                                            <a href="{{ url_for('update_service', service_id=service.id) }}" 
+                                               class="btn btn-sm btn-outline-warning">
+                                                <i class="fas fa-edit"></i> Update
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No services yet</h5>
+                            <p class="text-muted">Start by adding your first service!</p>
+                            <a href="{{ url_for('add_service') }}" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Add Your First Service
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rejected Services Section -->
+    {% set rejected_services = services|selectattr('is_rejected')|list %}
+    {% if rejected_services %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h5><i class="fas fa-times-circle"></i> Rejected Services - Action Required</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Important:</strong> The following services were rejected and need to be updated before they can be approved.
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Service Name</th>
+                                    <th>Category</th>
+                                    <th>Address</th>
+                                    <th>Rejection Reason</th>
+                                    <th>Rejected On</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for service in rejected_services %}
+                                <tr>
+                                    <td>{{ service.name }}</td>
+                                    <td>
+                                        <span class="badge" style="background-color: {{ '#FF6B6B' if service.category == 'food bank' else '#4ECDC4' if service.category == 'shelter' else '#45B7D1' if service.category == 'clinic' else '#96CEB4' if service.category == 'recycling center' else '#FFEAA7' if service.category == 'education' else '#DDA0DD' if service.category == 'employment' else '#FDCB6E' if service.category == 'transportation' else '#A8A8A8' }}; color: {{ 'white' if service.category in ['food bank', 'shelter', 'clinic', 'recycling center', 'employment'] else 'black' }};">{{ service.category }}</span>
+                                    </td>
+                                    <td>{{ service.address }}</td>
+                                    <td>
+                                        <span class="text-danger" title="{{ service.rejection_reason }}">
+                                            {{ service.rejection_reason[:50] }}{% if service.rejection_reason|length > 50 %}...{% endif %}
+                                        </span>
+                                    </td>
+                                    <td>{{ service.rejected_at.strftime('%B %d, %Y') if service.rejected_at else 'Unknown' }}</td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{{ url_for('service_detail', service_id=service.id) }}" 
+                                               class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i> View
+                                            </a>
+                                            <a href="{{ url_for('update_service', service_id=service.id) }}" 
+                                               class="btn btn-sm btn-warning">
+                                                <i class="fas fa-edit"></i> Update
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Held Services Section -->
+    {% set held_services = services|selectattr('is_held')|list %}
+    {% if held_services %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h5><i class="fas fa-pause-circle"></i> Services On Hold - Temporary Suspension</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Notice:</strong> The following services have been temporarily placed on hold by an administrator. They are not visible to users until the hold is removed.
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Service Name</th>
+                                    <th>Category</th>
+                                    <th>Address</th>
+                                    <th>Hold Reason</th>
+                                    <th>Held On</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for service in held_services %}
+                                <tr>
+                                    <td>{{ service.name }}</td>
+                                    <td>
+                                        <span class="badge" style="background-color: {{ '#FF6B6B' if service.category == 'food bank' else '#4ECDC4' if service.category == 'shelter' else '#45B7D1' if service.category == 'clinic' else '#96CEB4' if service.category == 'recycling center' else '#FFEAA7' if service.category == 'education' else '#DDA0DD' if service.category == 'employment' else '#FDCB6E' if service.category == 'transportation' else '#A8A8A8' }}; color: {{ 'white' if service.category in ['food bank', 'shelter', 'clinic', 'recycling center', 'employment'] else 'black' }};">{{ service.category }}</span>
+                                    </td>
+                                    <td>{{ service.address }}</td>
+                                    <td>
+                                        <span class="text-warning" title="{{ service.hold_reason }}">
+                                            {{ service.hold_reason[:50] }}{% if service.hold_reason|length > 50 %}...{% endif %}
+                                        </span>
+                                    </td>
+                                    <td>{{ service.held_at.strftime('%B %d, %Y') if service.held_at else 'Unknown' }}</td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{{ url_for('service_detail', service_id=service.id) }}" 
+                                               class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i> View Details
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Notifications{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4"><i class="fas fa-bell me-2"></i>Notifications</h2>
+    <div class="mb-3 text-end">
+        <button class="btn btn-danger btn-sm clear-notifications-btn">Clear all notifications</button>
+    </div>
+    {% if notifications|length == 0 %}
+        <div class="alert alert-info">You have no notifications.</div>
+    {% else %}
+        <ul class="list-group">
+            {% for notification in notifications|sort(attribute='created_at', reverse=True) %}
+                <li class="list-group-item d-flex align-items-center {% if not notification.is_read %}fw-bold{% endif %}">
+                    <div class="flex-grow-1">
+                        <div class="notification-message">{{ notification.message }}</div>
+                        <small class="text-muted">{{ notification.created_at.strftime('%b %d, %Y at %I:%M %p') }}</small>
+                    </div>
+                    <button class="btn btn-link btn-sm mark-read-btn" data-id="{{ notification.id }}" data-read="{{ 1 if notification.is_read else 0 }}" title="Mark as read/unread">
+                        {% if notification.is_read %}
+                            <i class="fas fa-envelope-open-text text-secondary"></i>
+                        {% else %}
+                            <i class="fas fa-envelope text-primary"></i>
+                        {% endif %}
+                    </button>
+                    <button class="btn btn-link btn-sm delete-notification-btn text-danger" data-id="{{ notification.id }}" title="Delete notification">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    {% if notification.url %}
+                        <a href="{{ notification.url }}" class="btn btn-sm btn-outline-primary ms-2">View</a>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</div>
+{% endblock %} 

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Reject Service - {{ service.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-times-circle me-2"></i>Reject Service
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Warning:</strong> You are about to reject the service "{{ service.name }}". 
+                        This will mark it as rejected but keep it in the system for record-keeping.
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5><i class="fas fa-info-circle text-primary me-2"></i>Service Details</h5>
+                            <ul class="list-unstyled">
+                                <li><strong>Name:</strong> {{ service.name }}</li>
+                                <li><strong>Category:</strong> {{ service.category }}</li>
+                                <li><strong>Address:</strong> {{ service.address }}</li>
+                                <li><strong>Provider:</strong> {{ service.provider.username if service.provider else 'Unknown' }}</li>
+                                <li><strong>Submitted:</strong> {{ service.created_at.strftime('%B %d, %Y at %I:%M %p') }}</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h5><i class="fas fa-file-alt text-info me-2"></i>Description</h5>
+                            <p>{{ service.description or 'No description provided' }}</p>
+                        </div>
+                    </div>
+                    
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="rejection_reason" class="form-label">
+                                <i class="fas fa-comment me-2"></i>Rejection Reason *
+                            </label>
+                            <textarea class="form-control" id="rejection_reason" name="rejection_reason" 
+                                      rows="4" placeholder="Please provide a reason for rejecting this service..." required></textarea>
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                This reason will be stored with the service record and may be shared with the service provider.
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-times me-2"></i>Reject Service
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

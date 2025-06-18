@@ -1,0 +1,695 @@
+{% extends "base.html" %}
+
+{% block title %}Add New Service{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-plus-circle"></i> Add New Service</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="name" class="form-label">Service Name *</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="category" class="form-label">Category *</label>
+                                <select class="form-select" id="category" name="category" required>
+                                    <option value="">Select Category</option>
+                                    <option value="food bank">Food Bank</option>
+                                    <option value="shelter">Shelter</option>
+                                    <option value="clinic">Clinic</option>
+                                    <option value="recycling center">Recycling Center</option>
+                                    <option value="education">Education</option>
+                                    <option value="employment">Employment</option>
+                                    <option value="transportation">Transportation</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3" 
+                                      placeholder="Describe your service..."></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Address *</label>
+                            <input type="text" class="form-control" id="address" name="address" required>
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Click on the map to automatically populate the address, or enter it manually.
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="phone" class="form-label">Phone Number</label>
+                                <input type="tel" class="form-control" id="phone" name="phone">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="hours" class="form-label">Operating Hours</label>
+                            <select class="form-select mb-2" id="hoursPreset" onchange="updateHoursField()">
+                                <option value="">Select from common options or enter custom</option>
+                                <option value="Mon-Fri 9AM-5PM">Monday - Friday: 9:00 AM - 5:00 PM</option>
+                                <option value="Mon-Fri 8AM-6PM">Monday - Friday: 8:00 AM - 6:00 PM</option>
+                                <option value="Mon-Sat 9AM-5PM">Monday - Saturday: 9:00 AM - 5:00 PM</option>
+                                <option value="Mon-Sat 8AM-6PM">Monday - Saturday: 8:00 AM - 6:00 PM</option>
+                                <option value="Daily 9AM-5PM">Daily: 9:00 AM - 5:00 PM</option>
+                                <option value="Daily 8AM-6PM">Daily: 8:00 AM - 6:00 PM</option>
+                                <option value="Mon-Fri 9AM-5PM, Sat 10AM-2PM">Monday - Friday: 9:00 AM - 5:00 PM, Saturday: 10:00 AM - 2:00 PM</option>
+                                <option value="Mon-Fri 8AM-6PM, Sat 9AM-3PM">Monday - Friday: 8:00 AM - 6:00 PM, Saturday: 9:00 AM - 3:00 PM</option>
+                                <option value="24/7">24 Hours / 7 Days a Week</option>
+                                <option value="By Appointment">By Appointment Only</option>
+                                <option value="custom">Enter Custom Hours</option>
+                            </select>
+                            <input type="text" class="form-control" id="hours" name="hours" 
+                                   placeholder="e.g., Mon-Fri 9AM-5PM, Sat 10AM-2PM" 
+                                   oninput="clearPreset()">
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Choose from common schedules or enter your custom operating hours.
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="latitude" class="form-label">Latitude</label>
+                                <input type="number" step="any" class="form-control" id="latitude" name="latitude" 
+                                       placeholder="e.g., 3.1390" readonly>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="longitude" class="form-label">Longitude</label>
+                                <input type="number" step="any" class="form-control" id="longitude" name="longitude" 
+                                       placeholder="e.g., 101.6869" readonly>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Location Picker</label>
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i>
+                                <strong>Instructions:</strong> 
+                                <ul class="mb-0 mt-2">
+                                    <li>Enter an address below and click "Search" to move the map to that location</li>
+                                    <li>Or click anywhere on the map to pin your service location</li>
+                                    <li>The coordinates and address will be automatically filled in</li>
+                                </ul>
+                            </div>
+                            
+                            <!-- Address Search Box -->
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" id="addressSearch" 
+                                       placeholder="Enter address, road name, or location (e.g., Jalan Bukit Bintang, Kuala Lumpur)">
+                                <button class="btn btn-outline-primary" type="button" onclick="searchAddress()">
+                                    <i class="fas fa-search"></i> Search
+                                </button>
+                                <button class="btn btn-outline-secondary" type="button" onclick="clearSearch()">
+                                    <i class="fas fa-times"></i> Clear
+                                </button>
+                            </div>
+                            
+                            <div id="locationMap" style="height: 400px; width: 100%; border-radius: 8px; border: 2px solid #dee2e6; background-color: #f8f9fa; display: flex; align-items: center; justify-content: center;">
+                                <div id="mapLoadingMessage" style="text-align: center; color: #6c757d;">
+                                    <i class="fas fa-spinner fa-spin fa-2x mb-2"></i><br>
+                                    Loading map...<br>
+                                    <small>If the map doesn't load, please refresh the page.</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>Note:</strong> Your service will be reviewed by an administrator before being published. 
+                            You will be notified once it's approved.
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Back to Dashboard
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Add Service
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add testing buttons -->
+<div class="container mt-2">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <button type="button" class="btn btn-outline-secondary btn-sm me-2" onclick="setManualLocation()">
+                <i class="fas fa-map-pin"></i> Set Manual Location (for testing)
+            </button>
+            <button type="button" class="btn btn-outline-info btn-sm me-2" onclick="testMapClick()">
+                <i class="fas fa-bug"></i> Test Map Click
+            </button>
+            <button type="button" class="btn btn-outline-warning btn-sm me-2" onclick="checkMapStatus()">
+                <i class="fas fa-info"></i> Check Map Status
+            </button>
+            <button type="button" class="btn btn-outline-success btn-sm" onclick="manualInitMap()">
+                <i class="fas fa-play"></i> Manual Init Map
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Global variables
+let locationMap = null;
+let locationMarker = null;
+
+// Wait for everything to load
+window.addEventListener('load', function() {
+    console.log('=== Window loaded, starting map initialization ===');
+    setTimeout(initializeMap, 1000);
+});
+
+// Simple map initialization
+function initializeMap() {
+    console.log('=== Starting Map Initialization ===');
+    
+    // Step 1: Check if Leaflet is loaded
+    if (typeof L === 'undefined') {
+        console.error('❌ Leaflet not loaded!');
+        showError('Leaflet map library not loaded. Please refresh the page.');
+        return;
+    }
+    console.log('✅ Leaflet loaded successfully');
+    
+    // Step 2: Check if map container exists
+    const mapContainer = document.getElementById('locationMap');
+    if (!mapContainer) {
+        console.error('❌ Map container not found!');
+        showError('Map container not found!');
+        return;
+    }
+    console.log('✅ Map container found');
+    
+    try {
+        console.log('🔄 Creating map...');
+        
+        // Remove loading message
+        const loadingMessage = document.getElementById('mapLoadingMessage');
+        if (loadingMessage) {
+            loadingMessage.remove();
+        }
+        
+        // Create the map
+        locationMap = L.map('locationMap').setView([3.1390, 101.6869], 8);
+        
+        // Add tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(locationMap);
+        
+        console.log('✅ Map created and tile layer added');
+        
+        // Add click event listener
+        locationMap.on('click', function(e) {
+            console.log('🎯 Map clicked!', e);
+            handleMapClick(e);
+        });
+        
+        console.log('🎉 Map initialization complete!');
+        showSuccess('Map loaded successfully! Click anywhere to set location.');
+        
+    } catch (error) {
+        console.error('❌ Error creating map:', error);
+        showError('Error creating map: ' + error.message);
+        
+        // Show error in map container
+        const mapContainer = document.getElementById('locationMap');
+        if (mapContainer) {
+            mapContainer.innerHTML = `
+                <div style="text-align: center; color: #dc3545; padding: 20px;">
+                    <i class="fas fa-exclamation-triangle fa-2x mb-2"></i><br>
+                    <strong>Map Error</strong><br>
+                    ${error.message}<br>
+                    <button class="btn btn-outline-primary btn-sm mt-2" onclick="location.reload()">
+                        <i class="fas fa-redo"></i> Refresh Page
+                    </button>
+                </div>
+            `;
+        }
+    }
+}
+
+// Handle map clicks
+function handleMapClick(e) {
+    console.log('=== MAP CLICKED ===');
+    console.log('Event:', e);
+    
+    if (!e || !e.latlng) {
+        console.error('❌ Invalid click event');
+        return;
+    }
+    
+    const lat = e.latlng.lat;
+    const lng = e.latlng.lng;
+    
+    console.log('📍 Coordinates:', lat, lng);
+    
+    // Update marker
+    updateMarker(lat, lng);
+    
+    // Update form fields
+    updateFormFields(lat, lng);
+    
+    // Get address
+    getAddressFromCoordinates(lat, lng);
+    
+    // Show success message
+    showSuccess('Location pinned successfully!');
+}
+
+// Update marker
+function updateMarker(lat, lng) {
+    console.log('🔄 Updating marker to:', lat, lng);
+    
+    // Remove old marker
+    if (locationMarker && locationMap) {
+        locationMap.removeLayer(locationMarker);
+    }
+    
+    // Create new marker
+    locationMarker = L.marker([lat, lng]).addTo(locationMap);
+    
+    // Add popup
+    locationMarker.bindPopup(`
+        <div style="text-align: center;">
+            <strong>Service Location</strong><br>
+            Lat: ${lat.toFixed(6)}<br>
+            Lng: ${lng.toFixed(6)}
+        </div>
+    `).openPopup();
+    
+    console.log('✅ Marker updated');
+}
+
+// Update form fields
+function updateFormFields(lat, lng) {
+    console.log('🔄 Updating form fields...');
+    
+    const latInput = document.getElementById('latitude');
+    const lngInput = document.getElementById('longitude');
+    
+    if (latInput && lngInput) {
+        latInput.value = lat.toFixed(6);
+        lngInput.value = lng.toFixed(6);
+        console.log('✅ Form fields updated:', latInput.value, lngInput.value);
+    } else {
+        console.error('❌ Form fields not found!');
+    }
+}
+
+// Get address from coordinates
+function getAddressFromCoordinates(lat, lng) {
+    console.log('🔄 Getting address for:', lat, lng);
+    
+    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`)
+        .then(response => response.json())
+        .then(data => {
+            console.log('📍 Address data:', data);
+            if (data && data.display_name) {
+                const addressInput = document.getElementById('address');
+                if (addressInput) {
+                    addressInput.value = data.display_name;
+                    console.log('✅ Address updated:', addressInput.value);
+                }
+            }
+        })
+        .catch(error => {
+            console.error('❌ Error getting address:', error);
+            // Fallback
+            const addressInput = document.getElementById('address');
+            if (addressInput) {
+                addressInput.value = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+            }
+        });
+}
+
+// Add location button
+function addLocationButton() {
+    if (!locationMap) return;
+    
+    const locationButton = L.Control.extend({
+        options: { position: 'topleft' },
+        onAdd: function(map) {
+            const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+            const button = L.DomUtil.create('a', 'leaflet-control-locate', container);
+            button.innerHTML = '<i class="fas fa-crosshairs"></i>';
+            button.title = 'Use My Current Location';
+            button.style.cssText = 'width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: white; border: 2px solid rgba(0,0,0,0.2); border-radius: 4px; cursor: pointer;';
+            
+            button.onclick = function() {
+                detectCurrentLocation();
+            };
+            
+            return container;
+        }
+    });
+    
+    locationButton().addTo(locationMap);
+}
+
+// Detect current location
+function detectCurrentLocation() {
+    if (!navigator.geolocation) {
+        showWarning('Geolocation not supported');
+        return;
+    }
+    
+    showInfo('Detecting your location...');
+    
+    navigator.geolocation.getCurrentPosition(
+        function(position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            
+            console.log('📍 Current location:', lat, lng);
+            
+            updateMarker(lat, lng);
+            updateFormFields(lat, lng);
+            getAddressFromCoordinates(lat, lng);
+            
+            if (locationMap) {
+                locationMap.setView([lat, lng], 16);
+            }
+            
+            showSuccess('Current location detected!');
+        },
+        function(error) {
+            console.error('❌ Geolocation error:', error);
+            showError('Unable to detect location');
+        }
+    );
+}
+
+// Message functions
+function showMessage(message, type = 'info') {
+    console.log('💬 Showing message:', message, type);
+    
+    let alertDiv = document.getElementById('location-alert');
+    if (!alertDiv) {
+        alertDiv = document.createElement('div');
+        alertDiv.id = 'location-alert';
+        alertDiv.style.cssText = `
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            border-radius: 5px;
+            color: white;
+            font-weight: bold;
+            z-index: 1001;
+            max-width: 300px;
+            text-align: center;
+        `;
+        document.getElementById('locationMap').appendChild(alertDiv);
+    }
+    
+    const colors = {
+        'info': '#17a2b8',
+        'success': '#28a745',
+        'warning': '#ffc107',
+        'error': '#dc3545'
+    };
+    
+    alertDiv.style.backgroundColor = colors[type] || colors.info;
+    alertDiv.textContent = message;
+    
+    setTimeout(() => {
+        if (alertDiv && alertDiv.parentNode) {
+            alertDiv.parentNode.removeChild(alertDiv);
+        }
+    }, 3000);
+}
+
+function showSuccess(message) { showMessage(message, 'success'); }
+function showError(message) { showMessage(message, 'error'); }
+function showWarning(message) { showMessage(message, 'warning'); }
+function showInfo(message) { showMessage(message, 'info'); }
+
+// Test functions
+function testMapClick() {
+    console.log('=== Testing Map Click ===');
+    if (locationMap) {
+        console.log('✅ Map exists, simulating click at KL coordinates');
+        const testEvent = {
+            latlng: L.latLng(3.1390, 101.6869)
+        };
+        handleMapClick(testEvent);
+    } else {
+        console.error('❌ Map not initialized');
+        alert('Map not initialized');
+    }
+}
+
+function setManualLocation() {
+    const lat = prompt('Enter latitude:');
+    const lng = prompt('Enter longitude:');
+    
+    if (lat && lng && !isNaN(parseFloat(lat)) && !isNaN(parseFloat(lng))) {
+        updateMarker(parseFloat(lat), parseFloat(lng));
+        updateFormFields(parseFloat(lat), parseFloat(lng));
+        getAddressFromCoordinates(parseFloat(lat), parseFloat(lng));
+        if (locationMap) {
+            locationMap.setView([parseFloat(lat), parseFloat(lng)], 16);
+        }
+        showSuccess('Manual location set!');
+    }
+}
+
+function checkMapStatus() {
+    console.log('=== Map Status ===');
+    console.log('Leaflet loaded:', typeof L !== 'undefined');
+    console.log('Map container exists:', !!document.getElementById('locationMap'));
+    console.log('LocationMap variable:', !!locationMap);
+    console.log('LocationMarker variable:', !!locationMarker);
+    
+    if (locationMap) {
+        console.log('Map center:', locationMap.getCenter());
+        console.log('Map zoom:', locationMap.getZoom());
+    }
+    
+    // Show status in alert
+    let status = 'Map Status:\n';
+    status += 'Leaflet loaded: ' + (typeof L !== 'undefined' ? 'Yes' : 'No') + '\n';
+    status += 'Map container: ' + (!!document.getElementById('locationMap') ? 'Found' : 'Missing') + '\n';
+    status += 'Map object: ' + (!!locationMap ? 'Created' : 'Not created') + '\n';
+    
+    alert(status);
+}
+
+// Manual map initialization function
+function manualInitMap() {
+    console.log('=== Manual Map Initialization ===');
+    if (typeof L === 'undefined') {
+        alert('Leaflet not loaded. Please refresh the page.');
+        return;
+    }
+    
+    const mapContainer = document.getElementById('locationMap');
+    if (!mapContainer) {
+        alert('Map container not found!');
+        return;
+    }
+    
+    try {
+        // Clear container
+        mapContainer.innerHTML = '';
+        
+        // Create map
+        locationMap = L.map('locationMap').setView([3.1390, 101.6869], 8);
+        
+        // Add tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(locationMap);
+        
+        // Add click event
+        locationMap.on('click', function(e) {
+            console.log('Map clicked:', e.latlng);
+            handleMapClick(e);
+        });
+        
+        alert('Map initialized successfully!');
+        
+    } catch (error) {
+        console.error('Manual init error:', error);
+        alert('Error: ' + error.message);
+    }
+}
+
+// Form validation
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const lat = document.getElementById('latitude');
+            const lng = document.getElementById('longitude');
+            
+            if (!lat || !lng || !lat.value || !lng.value) {
+                e.preventDefault();
+                alert('Please select a location on the map before submitting.');
+                return false;
+            }
+        });
+    }
+});
+
+// Address search and geocoding functions
+function searchAddress() {
+    const searchInput = document.getElementById('addressSearch');
+    const address = searchInput.value.trim();
+    
+    if (!address) {
+        showWarning('Please enter an address to search');
+        return;
+    }
+    
+    console.log('🔍 Searching for address:', address);
+    showInfo('Searching for location...');
+    
+    geocodeAddress(address);
+}
+
+function clearSearch() {
+    const searchInput = document.getElementById('addressSearch');
+    searchInput.value = '';
+    
+    // Clear any search markers
+    if (window.searchMarker && locationMap) {
+        locationMap.removeLayer(window.searchMarker);
+        window.searchMarker = null;
+    }
+    
+    showInfo('Search cleared');
+}
+
+function geocodeAddress(address) {
+    console.log('🌍 Geocoding address:', address);
+    
+    // Use OpenStreetMap Nominatim API for geocoding
+    const searchUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=5&addressdetails=1&countrycodes=my`;
+    
+    fetch(searchUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('📍 Geocoding results:', data);
+            
+            if (data && data.length > 0) {
+                // Use the first (most relevant) result
+                const result = data[0];
+                const lat = parseFloat(result.lat);
+                const lng = parseFloat(result.lon);
+                
+                console.log('✅ Found location:', lat, lng, result.display_name);
+                
+                // Move map to the location
+                if (locationMap) {
+                    locationMap.setView([lat, lng], 16);
+                    
+                    // Add a temporary search marker
+                    if (window.searchMarker) {
+                        locationMap.removeLayer(window.searchMarker);
+                    }
+                    
+                    window.searchMarker = L.marker([lat, lng], {
+                        icon: L.divIcon({
+                            className: 'search-marker',
+                            html: '<div style="background-color: #007bff; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3);"></div>',
+                            iconSize: [20, 20],
+                            iconAnchor: [10, 10]
+                        })
+                    }).addTo(locationMap);
+                    
+                    window.searchMarker.bindPopup(`
+                        <div style="text-align: center;">
+                            <strong>Searched Location</strong><br>
+                            ${result.display_name}<br>
+                            <small>Click on map to set service location</small>
+                        </div>
+                    `).openPopup();
+                }
+                
+                // Update form fields with the found location
+                updateFormFields(lat, lng);
+                
+                // Update address field with the full address
+                const addressInput = document.getElementById('address');
+                if (addressInput) {
+                    addressInput.value = result.display_name;
+                }
+                
+                showSuccess(`Found: ${result.display_name}`);
+                
+            } else {
+                showWarning('No locations found for this address. Try a different search term.');
+            }
+        })
+        .catch(error => {
+            console.error('❌ Geocoding error:', error);
+            showError('Error searching for address. Please try again.');
+        });
+}
+
+// Add keyboard support for address search
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('addressSearch');
+    if (searchInput) {
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                searchAddress();
+            }
+        });
+    }
+});
+
+// Operating hours functions
+function updateHoursField() {
+    const presetSelect = document.getElementById('hoursPreset');
+    const hoursInput = document.getElementById('hours');
+    
+    if (presetSelect.value === 'custom') {
+        hoursInput.value = '';
+        hoursInput.focus();
+        hoursInput.placeholder = 'Enter your custom operating hours...';
+    } else if (presetSelect.value) {
+        hoursInput.value = presetSelect.value;
+    }
+}
+
+function clearPreset() {
+    const presetSelect = document.getElementById('hoursPreset');
+    presetSelect.value = '';
+}
+</script>
+{% endblock %} 

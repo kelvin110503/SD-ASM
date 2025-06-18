@@ -1,0 +1,407 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2>
+                <button type="button" class="btn btn-outline-primary btn-sm me-2 align-middle d-none d-md-inline" id="sectionNavBtnInline" title="Jump to section" style="vertical-align: middle;">
+                    <i class="fas fa-list"></i>
+                </button>
+                <i class="fas fa-shield-alt"></i>
+                Admin Dashboard
+            </h2>
+            <p class="text-muted">Welcome, {{ current_user.username }}! Manage the system here.</p>
+
+            <!-- System Statistics Card -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-bar"></i> System Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col">
+                            <h3 class="text-warning">{{ pending_services|length }}</h3>
+                            <p class="text-muted">Pending</p>
+                        </div>
+                        <div class="col">
+                            <h3 class="text-success">{{ all_services|selectattr('is_approved')|list|length }}</h3>
+                            <p class="text-muted">Approved</p>
+                        </div>
+                        <div class="col">
+                            <h3 class="text-danger">{{ rejected_services|length }}</h3>
+                            <p class="text-muted">Rejected</p>
+                        </div>
+                        <div class="col">
+                            <h3 class="text-warning">{{ held_services|length }}</h3>
+                            <p class="text-muted">On Hold</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="pending" class="mb-5">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-clock"></i> Pending Services</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-warning mb-3">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Note:</strong> Click "View" to see service details and approve/reject from there.
+                        </div>
+                        {% if pending_services %}
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Service Name</th>
+                                            <th>Category</th>
+                                            <th>Provider</th>
+                                            <th>Address</th>
+                                            <th>Submitted</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for service in pending_services %}
+                                        <tr>
+                                            <td>{{ service.name }}</td>
+                                            <td>
+                                                <span class="badge" style="background-color: {{ '#FF6B6B' if service.category == 'food bank' else '#4ECDC4' if service.category == 'shelter' else '#45B7D1' if service.category == 'clinic' else '#96CEB4' if service.category == 'recycling center' else '#FFEAA7' if service.category == 'education' else '#DDA0DD' if service.category == 'employment' else '#FDCB6E' if service.category == 'transportation' else '#A8A8A8' }}; color: {{ 'white' if service.category in ['food bank', 'shelter', 'clinic', 'recycling center', 'employment'] else 'black' }};">{{ service.category }}</span>
+                                            </td>
+                                            <td>{{ service.provider.username if service.provider else 'Unknown' }}</td>
+                                            <td>{{ service.address }}</td>
+                                            <td>{{ service.created_at.strftime('%B %d, %Y') }}</td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <a href="{{ url_for('service_detail', service_id=service.id) }}" 
+                                                       class="btn btn-sm btn-outline-primary">
+                                                        <i class="fas fa-eye"></i> View
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-4">
+                                <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                                <h5 class="text-success">No pending services!</h5>
+                                <p class="text-muted">All services have been reviewed and processed.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div id="rejected" class="mb-5">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-times-circle"></i> Rejected Services</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-warning mb-3">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Note:</strong> Click "View" to see service details and approve from there if the provider has updated the service.
+                        </div>
+                        {% if rejected_services %}
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Service Name</th>
+                                            <th>Category</th>
+                                            <th>Provider</th>
+                                            <th>Address</th>
+                                            <th>Rejection Reason</th>
+                                            <th>Rejected On</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for service in rejected_services %}
+                                        <tr>
+                                            <td>{{ service.name }}</td>
+                                            <td>
+                                                <span class="badge" style="background-color: {{ '#FF6B6B' if service.category == 'food bank' else '#4ECDC4' if service.category == 'shelter' else '#45B7D1' if service.category == 'clinic' else '#96CEB4' if service.category == 'recycling center' else '#FFEAA7' if service.category == 'education' else '#DDA0DD' if service.category == 'employment' else '#FDCB6E' if service.category == 'transportation' else '#A8A8A8' }}; color: {{ 'white' if service.category in ['food bank', 'shelter', 'clinic', 'recycling center', 'employment'] else 'black' }};">{{ service.category }}</span>
+                                            </td>
+                                            <td>{{ service.provider.username if service.provider else 'Unknown' }}</td>
+                                            <td>{{ service.address }}</td>
+                                            <td>
+                                                <span class="text-danger" title="{{ service.rejection_reason }}">
+                                                    {{ service.rejection_reason[:50] }}{% if service.rejection_reason|length > 50 %}...{% endif %}
+                                                </span>
+                                            </td>
+                                            <td>{{ service.rejected_at.strftime('%B %d, %Y') if service.rejected_at else 'Unknown' }}</td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <a href="{{ url_for('service_detail', service_id=service.id) }}" 
+                                                       class="btn btn-sm btn-outline-primary">
+                                                        <i class="fas fa-eye"></i> View
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-4">
+                                <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                                <h5 class="text-success">No rejected services!</h5>
+                                <p class="text-muted">No services have been rejected.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div id="held" class="mb-5">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-pause-circle"></i> Services On Hold</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-warning mb-3">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Note:</strong> Click "View" to see service details and remove from hold if the issue has been resolved.
+                        </div>
+                        {% if held_services %}
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Service Name</th>
+                                            <th>Category</th>
+                                            <th>Provider</th>
+                                            <th>Address</th>
+                                            <th>Hold Reason</th>
+                                            <th>Held On</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for service in held_services %}
+                                        <tr>
+                                            <td>{{ service.name }}</td>
+                                            <td>
+                                                <span class="badge" style="background-color: {{ '#FF6B6B' if service.category == 'food bank' else '#4ECDC4' if service.category == 'shelter' else '#45B7D1' if service.category == 'clinic' else '#96CEB4' if service.category == 'recycling center' else '#FFEAA7' if service.category == 'education' else '#DDA0DD' if service.category == 'employment' else '#FDCB6E' if service.category == 'transportation' else '#A8A8A8' }}; color: {{ 'white' if service.category in ['food bank', 'shelter', 'clinic', 'recycling center', 'employment'] else 'black' }};">{{ service.category }}</span>
+                                            </td>
+                                            <td>{{ service.provider.username if service.provider else 'Unknown' }}</td>
+                                            <td>{{ service.address }}</td>
+                                            <td>
+                                                <span class="text-warning" title="{{ service.hold_reason }}">
+                                                    {{ service.hold_reason[:50] }}{% if service.hold_reason|length > 50 %}...{% endif %}
+                                                </span>
+                                            </td>
+                                            <td>{{ service.held_at.strftime('%B %d, %Y') if service.held_at else 'Unknown' }}</td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <a href="{{ url_for('service_detail', service_id=service.id) }}" 
+                                                       class="btn btn-sm btn-outline-primary">
+                                                        <i class="fas fa-eye"></i> View
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-4">
+                                <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                                <h5 class="text-success">No services on hold!</h5>
+                                <p class="text-muted">No services are currently on hold.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div id="all" class="mb-5">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-list"></i> Manage All Services</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if all_services %}
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Service Name</th>
+                                            <th>Category</th>
+                                            <th>Provider</th>
+                                            <th>Address</th>
+                                            <th>Status</th>
+                                            <th>Rating</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for service in all_services %}
+                                        <tr>
+                                            <td>{{ service.name }}</td>
+                                            <td>
+                                                <span class="badge" style="background-color: {{ '#FF6B6B' if service.category == 'food bank' else '#4ECDC4' if service.category == 'shelter' else '#45B7D1' if service.category == 'clinic' else '#96CEB4' if service.category == 'recycling center' else '#FFEAA7' if service.category == 'education' else '#DDA0DD' if service.category == 'employment' else '#FDCB6E' if service.category == 'transportation' else '#A8A8A8' }}; color: {{ 'white' if service.category in ['food bank', 'shelter', 'clinic', 'recycling center', 'employment'] else 'black' }};">{{ service.category }}</span>
+                                            </td>
+                                            <td>{{ service.provider.username if service.provider else 'Unknown' }}</td>
+                                            <td>{{ service.address }}</td>
+                                            <td>
+                                                {% if service.is_held %}
+                                                    <span class="badge bg-warning">On Hold</span>
+                                                {% elif service.is_approved %}
+                                                    <span class="badge bg-success">Approved</span>
+                                                {% elif service.is_rejected %}
+                                                    <span class="badge bg-danger">Rejected</span>
+                                                {% else %}
+                                                    <span class="badge bg-warning">Pending</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if service.rating > 0 %}
+                                                    <span class="text-warning">
+                                                        {% for i in range(service.rating|int) %}★{% endfor %}
+                                                        {% for i in range(5 - service.rating|int) %}☆{% endfor %}
+                                                    </span>
+                                                    ({{ "%.1f"|format(service.rating) }})
+                                                {% else %}
+                                                    <span class="text-muted">No ratings</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <a href="{{ url_for('service_detail', service_id=service.id) }}" 
+                                                       class="btn btn-sm btn-outline-primary">
+                                                        <i class="fas fa-eye"></i> View
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-4">
+                                <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                                <h5 class="text-success">No services found.</h5>
+                                <p class="text-muted">Once services are added, they will appear here.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div id="providers" class="mb-5">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-users"></i> Manage Service Providers</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if service_providers %}
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Username</th>
+                                            <th>Email</th>
+                                            <th>Registered On</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for provider in service_providers %}
+                                        <tr>
+                                            <td>{{ provider.username }}</td>
+                                            <td>{{ provider.email }}</td>
+                                            <td>{{ provider.created_at.strftime('%B %d, %Y') }}</td>
+                                            <td>
+                                                <form action="{{ url_for('delete_user', user_id=provider.id) }}" method="POST" style="display:inline;">
+                                                    <button type="submit" class="btn btn-sm btn-danger" 
+                                                            onclick="return confirmDeleteUser('{{ provider.username }}')">
+                                                        <i class="fas fa-trash"></i> Delete
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-4">
+                                <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                                <h5 class="text-success">No service providers found.</h5>
+                                <p class="text-muted">Once service providers register, they will appear here.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Section Nav Modal -->
+<div class="modal fade" id="sectionNavModal" tabindex="-1" aria-labelledby="sectionNavModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="sectionNavModalLabel"><i class="fas fa-list me-2"></i>Jump to Section</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item"><a href="#pending" class="section-link"><i class="fas fa-clock me-2"></i>Pending Services</a></li>
+          <li class="list-group-item"><a href="#rejected" class="section-link"><i class="fas fa-times-circle me-2"></i>Rejected Services</a></li>
+          <li class="list-group-item"><a href="#held" class="section-link"><i class="fas fa-pause-circle me-2"></i>On Hold</a></li>
+          <li class="list-group-item"><a href="#all" class="section-link"><i class="fas fa-list me-2"></i>All Services</a></li>
+          <li class="list-group-item"><a href="#providers" class="section-link"><i class="fas fa-users me-2"></i>Providers</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function confirmDeleteUser(username) {
+    return confirm('Are you sure you want to delete "' + username + '"? This action cannot be undone and all associated services and reviews will also be deleted.');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    var navBtn = document.getElementById('sectionNavBtn');
+    var navBtnInline = document.getElementById('sectionNavBtnInline');
+    var navModal = new bootstrap.Modal(document.getElementById('sectionNavModal'));
+    if (navBtn) {
+        navBtn.addEventListener('click', function() {
+            navModal.show();
+        });
+    }
+    if (navBtnInline) {
+        navBtnInline.addEventListener('click', function() {
+            navModal.show();
+        });
+    }
+    document.querySelectorAll('.section-link').forEach(function(link) {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            var target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                navModal.hide();
+                setTimeout(function() {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 300);
+            }
+        });
+    });
+});
+</script>
+{% endblock %} 
