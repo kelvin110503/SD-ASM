@@ -22,6 +22,8 @@
 .card {
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     border: none;
+    background-color: #2d3748;
+    color: #e2e8f0;
 }
 
 .card:hover {
@@ -115,18 +117,20 @@
 /* Form Enhancements */
 .form-control, .form-select {
     border-radius: 8px;
-    border: 2px solid #e9ecef;
+    border: 2px solid #718096;
     transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    background-color: #4a5568;
+    color: #e2e8f0;
 }
 
 .form-control:focus, .form-select:focus {
-    border-color: #007bff;
+    border-color: #63b3ed;
     box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
 .input-group-text {
     border-radius: 8px 0 0 8px;
-    border: 2px solid #e9ecef;
+    border: 2px solid #718096;
     border-right: none;
 }
 
@@ -144,19 +148,19 @@
 
 .alert-info {
     font-size: 1.05rem;
-    color: #1a1a1a !important;
-    background-color: #e9f7fd !important;
+    color: #f8f9fa !important;
+    background-color: #223344 !important;
 }
 
 .alert-info h6 {
     font-weight: 600;
-    color: #0d6efd !important;
+    color: #90caf9 !important;
 }
 
 .alert-info ul, .alert-info li {
     font-size: 1rem;
     font-weight: 500;
-    color: #1a1a1a !important;
+    color: #f8f9fa !important;
 }
 
 .alert-success {
@@ -284,35 +288,6 @@ footer a:hover {
     .card {
         border: 1px solid #000 !important;
         box-shadow: none !important;
-    }
-}
-
-/* Dark Mode Support */
-@media (prefers-color-scheme: dark) {
-    .card {
-        background-color: #2d3748;
-        color: #e2e8f0;
-    }
-    
-    .form-control, .form-select {
-        background-color: #4a5568;
-        border-color: #718096;
-        color: #e2e8f0;
-    }
-    
-    .form-control:focus, .form-select:focus {
-        background-color: #4a5568;
-        border-color: #63b3ed;
-    }
-    .alert-info {
-        color: #f8f9fa !important;
-        background-color: #223344 !important;
-    }
-    .alert-info h6 {
-        color: #90caf9 !important;
-    }
-    .alert-info ul, .alert-info li {
-        color: #f8f9fa !important;
     }
 }
 
