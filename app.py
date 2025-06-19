@@ -87,13 +87,13 @@ class Review(db.Model):
 
 class Notification(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
     message = db.Column(db.String(255), nullable=False)
     url = db.Column(db.String(255))
     is_read = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    user = db.relationship('User', backref='notifications')
+    user = db.relationship('User', backref=db.backref('notifications', passive_deletes=True))
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -586,6 +586,9 @@ def delete_user(user_id):
     reviews = Review.query.filter_by(user_id=user.id).all()
     for review in reviews:
         db.session.delete(review)
+    
+    # Delete all notifications for this user
+    Notification.query.filter_by(user_id=user.id).delete()
     
     # Delete the user
     db.session.delete(user)
